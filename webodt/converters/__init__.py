@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import tempfile
-from django.utils.importlib import import_module
+from importlib import import_module
 from webodt.conf import WEBODT_DEFAULT_FORMAT, WEBODT_CONVERTER, WEBODT_TMP_DIR
 
 def converter():

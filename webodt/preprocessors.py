@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.utils.importlib import import_module
+from importlib import import_module
 from cStringIO import StringIO
 from lxml import etree
 import re
