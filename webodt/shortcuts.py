@@ -78,7 +78,7 @@ def render_to_response(template_name,
         content = _ifile(content_fd)
     else:
         content = content_fd.read()
-    response = HttpResponse(content, mimetype=mimetype)
+    response = HttpResponse(content, mimetype)
     if not filename:
         filename = os.path.basename(template_name)
         filename += '.%s' % format
