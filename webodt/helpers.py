@@ -4,12 +4,17 @@ import mimetypes
 import tempfile
 import os
 
+import webodt
+
 
 def get_mimetype(format):
     ext = '.%s' % format
     map = mimetypes.types_map.copy()
-    map['.odt'] = 'application/vnd.oasis.opendocument.text'
-    map['.rtf'] = 'text/richtext'
+
+    for extension, mimtype in webodt.CONTENT_TYPES.items():
+        extension = '.{}'.format(extension)
+        map[extension] = mimtype
+
     mimetype = map[ext]
     return mimetype
 
@@ -31,6 +36,6 @@ def guess_format_and_filename(filename, format):
         format = WEBODT_DEFAULT_FORMAT
     # filename is undefined
     if not filename:
-        lowlevel_fd, filename = tempfile.mkstemp(suffix = '.' + format, dir=WEBODT_TMP_DIR)
+        lowlevel_fd, filename = tempfile.mkstemp(suffix='.' + format, dir=WEBODT_TMP_DIR)
         os.close(lowlevel_fd)
     return filename, format

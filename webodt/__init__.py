@@ -23,7 +23,8 @@ from webodt.preprocessors import list_preprocessors
 CONTENT_TYPES = {
     'html': 'text/html',
     'odt': 'application/vnd.oasis.opendocument.text',
-    'ods': 'application/vnd.oasis.opendocument.spreadsheet'
+    'ods': 'application/vnd.oasis.opendocument.spreadsheet',
+    'rtf': 'text/richtext'
 }
 
 
@@ -148,7 +149,7 @@ class ODFBaseTemplate(ODFBaseMixin):
         # remove directory tree
         shutil.rmtree(tmpdir)
         # return ODF document
-        return ODFDocument(tmpfile, delete_on_close=delete_on_close)
+        return ODFDocument(tmpfile, format=self.format, delete_on_close=delete_on_close)
 
 
 class ODTTemplate(ODFBaseTemplate):
@@ -230,9 +231,10 @@ class _UnpackedODFHandler(object):
 
 class Document(ODFBaseMixin, file):
 
-    def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True):
+    def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True, format='odt'):
         file.__init__(self, filename, mode, buffering)
         self.delete_on_close = delete_on_close
+        self.format = format
 
     def close(self):
         file.close(self)
@@ -244,7 +246,6 @@ class Document(ODFBaseMixin, file):
 
 
 class HTMLDocument(Document):
-    format = 'html'
 
     def get_content(self):
         fd = open(self.name, 'r')
@@ -254,7 +255,6 @@ class HTMLDocument(Document):
 
 
 class ODFDocument(Document):
-    format = 'odt'
 
     def get_content_xml(self):
         fd = zipfile.ZipFile(self.name)
