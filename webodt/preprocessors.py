@@ -39,6 +39,7 @@ def unescape_templatetags_preprocessor(template_content):
             )
     return template_content
 
+
 def xmlfor_preprocessor(template_content):
     tree = etree.parse(StringIO(template_content))
 
@@ -52,7 +53,7 @@ def xmlfor_preprocessor(template_content):
         re_xmlfor_match = re_xmlfor.search(el.text) if el.text else None
         if re_xmlfor_match:
             forloop_clause = re_xmlfor_match.group(1)
-            xmlfor_starts.append((el, forloop_clause)) # (<div ...>, 'person in people')
+            xmlfor_starts.append((el, forloop_clause))  # (<div ...>, 'person in people')
             el.text = re_xmlfor.sub('', el.text)
         # search for start tag in tail
         re_xmlfor_match = re_xmlfor.search(el.tail) if el.tail else None
@@ -65,7 +66,7 @@ def xmlfor_preprocessor(template_content):
         if re_endxmlfor_match:
             try:
                 start_el, forloop_clause = xmlfor_starts.pop()
-            except IndexError, e:
+            except IndexError:
                 raise ValueError('Unexpected {%% endxmlfor %%} tag near %s' % el.text)
             xmlfor_pairs.append((start_el, el, forloop_clause))
             el.text = re_endxmlfor.sub('', el.text)
@@ -74,7 +75,7 @@ def xmlfor_preprocessor(template_content):
         if re_endxmlfor_match:
             try:
                 start_el, forloop_clause = xmlfor_starts.pop()
-            except IndexError, e:
+            except IndexError:
                 raise ValueError('Unexpected {%% endxmlfor %%} tag near %s' % el.tail)
             xmlfor_pairs.append((start_el, el.getparent(), forloop_clause))
             el.tail = re_endxmlfor.sub('', el.tail)
@@ -102,10 +103,12 @@ def xmlfor_preprocessor(template_content):
         ancestor_tag.tail = u'%s%s' % (u'{% endfor %}', ancestor_tail)
     return _tree_to_string(tree)
 
+
 def _find_common_ancestor(tag1, tag2):
     for ancestor in tag1.iterancestors():
         if ancestor in tag2.iterancestors():
             return ancestor
+
 
 def _tree_to_string(tree):
     output = StringIO()

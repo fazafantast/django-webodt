@@ -1,6 +1,6 @@
-#coding:utf-8
+# -*- coding: utf-8 -*-
 from webodt.converters import ConverterError
-from webodt.helpers import guess_format_and_filename
+from webodt.helpers import guess_extend_and_filename
 try:
     from xhtml2pdf import pisa
 except ImportError:
@@ -17,7 +17,7 @@ class XHTML2PDFConverter(object):
             raise ConverterError(u'xhtml2pdf does not support %s input format' % document.format)
         if format != 'pdf':
             raise ConverterError(u'xhtml2pdf does not support %s output format' % format)
-        output_filename, format = guess_format_and_filename(output_filename, format)
+        output_filename, format = guess_extend_and_filename(output_filename, format)
         input_file = document
         input_filename = document.name
         output_file = open(output_filename, 'wb')

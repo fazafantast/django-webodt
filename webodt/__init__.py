@@ -61,7 +61,7 @@ class ODFTemplate(object):
 
     format = 'odt'
     content_type = 'application/vnd.oasis.opendocument.text'
-    _fake_timestamp = time.mktime((2010,1,1,0,0,0,0,0,0))
+    _fake_timestamp = time.mktime((2010, 1, 1, 0, 0, 0, 0, 0, 0))
 
     def __init__(self, template_name, preprocessors=None):
         """ Create object by the template name. The template name is relative
@@ -95,11 +95,11 @@ class ODFTemplate(object):
         """ Return the styles.xml file contents """
         return self.handler.get_styles_xml()
 
-    def get_file(self,path):
+    def get_file(self, path):
         return self.handler.get_file(path)
 
     def get_files_to_process(self):
-        #parse manifest
+        # parse manifest
         paths = []
         ee = etree.parse(StringIO(self.get_file("META-INF/manifest.xml")))
         for xml_ref in ee.findall("//{urn:oasis:names:tc:opendocument:xmlns:manifest:1.0}file-entry[@{urn:oasis:names:tc:opendocument:xmlns:manifest:1.0}media-type='text/xml']"):
@@ -197,7 +197,7 @@ class _UnpackedODFHandler(object):
         fd.close()
         return data
 
-    def get_file(self,path):
+    def get_file(self, path):
         fd = open(os.path.join(self.dirname, path), 'r')
         data = fd.read()
         fd.close()
