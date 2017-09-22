@@ -10,7 +10,7 @@ from webodt import Document
 
 class XHTML2PDFConverter(object):
 
-    WEBODT_DEFAULT_FORMAT = 'pdf'
+    WEBODT_DEFAULT_EXTEND = 'pdf'
 
     def convert(self, document, format=None, output_filename=None, delete_on_close=True):
         if document.format != 'html':

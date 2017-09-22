@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
-import tempfile
 from importlib import import_module
-from webodt.conf import WEBODT_DEFAULT_FORMAT, WEBODT_CONVERTER, WEBODT_TMP_DIR
+from webodt.conf import WEBODT_DEFAULT_EXTEND, WEBODT_CONVERTER
+
 
 def converter():
     """ Create and return Converter instance
@@ -10,9 +9,9 @@ def converter():
     """
     try:
         module_name, class_name = WEBODT_CONVERTER.rsplit('.', 1)
-    except ValueError: # need more than 1 value to unpack
-        raise ValueError(
-            'WEBODT_CONVERTER %s have to be written in the form of "package.name.ClassName"' % WEBODT_CONVERTER)
+    except ValueError:  # need more than 1 value to unpack
+        raise ValueError('WEBODT_CONVERTER %s have to be written in the form of "package.name.ClassName"' % WEBODT_CONVERTER)
+
     mod = import_module(module_name)
     Converter = getattr(mod, class_name)
     return Converter()
@@ -21,12 +20,15 @@ def converter():
 class ODFConverter(object):
     """ Base class for all built-in converter backends """
 
-    WEBODT_DEFAULT_FORMAT = 'doc'
+    default_extend = WEBODT_DEFAULT_EXTEND
 
-    def convert(self, document, format=None, output_filename=None, delete_on_close=True):
+    def _get_extend(self):
+        return self.default_extend
+
+    def convert(self, document, extend=None, output_filename=None, delete_on_close=True):
         """ convert document and return file-like object representing output
         document """
-        if format == 'odt':
+        if extend == 'odt':
             return document
         raise NotImplementedError("Should be implemented in subclass")
 
