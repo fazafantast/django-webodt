@@ -7,6 +7,8 @@ WEBODT_DEFAULT_EXTEND = getattr(settings, 'WEBODT_DEFAULT_EXTEND', 'doc')
 WEBODT_ABIWORD_COMMAND = getattr(settings, 'WEBODT_ABIWORD_COMMAND', ['/usr/bin/abiword', '--plugin', 'AbiCommand'])
 WEBODT_LIBREOFFICE_COMMAND = getattr(settings, 'WEBODT_LIBREOFFICE_COMMAND', ['/usr/bin/libreoffice', '--headless', '--writer', '--convert-to'])
 
+WEBODT_OPENOFFICE_SERVER = getattr(settings, 'WEBODT_OPENOFFICE_SERVER', ('localhost', 2002))
+
 WEBODT_GOOGLEDOCS_EMAIL = getattr(settings, 'WEBODT_GOOGLEDOCS_EMAIL', None)
 WEBODT_GOOGLEDOCS_PASSWORD = getattr(settings, 'WEBODT_GOOGLEDOCS_PASSWORD', None)
 WEBODT_CONVERTER = getattr(settings, 'WEBODT_CONVERTER', 'webodt.converters.abiword.AbiwordODFConverter')
