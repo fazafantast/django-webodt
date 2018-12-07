@@ -3,7 +3,6 @@
 from distutils.core import setup
 
 import os, sys
-reload(sys).setdefaultencoding("UTF-8")
 
 def read(fname):
     try:
@@ -17,7 +16,7 @@ setup(
     author='NetAngels',
     author_email='info@netangels.ru',
     packages=['webodt', 'webodt.converters', 'webodt.tests'],
-    url='http://github.com/netangels/django-webodt',
+    url='http://github.com/fazafantast/django-webodt',
     license = 'BSD License',
     description = u'ODF template handler and odt to html, pdf, doc, etc converter',
     long_description = read('README.rst'),
