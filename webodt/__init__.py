@@ -12,8 +12,8 @@ import zipfile
 import tempfile
 import shutil
 import time
+from io import BytesIO, FileIO
 from lxml import etree
-from cStringIO import StringIO
 from django.template import Template
 from django.utils.encoding import smart_str
 from webodt.conf import WEBODT_TEMPLATE_PATH, WEBODT_ODF_TEMPLATE_PREPROCESSORS, WEBODT_TMP_DIR
@@ -101,7 +101,9 @@ class ODFTemplate(object):
     def get_files_to_process(self):
         # parse manifest
         paths = []
-        ee = etree.parse(StringIO(self.get_file("META-INF/manifest.xml")))
+        file = self.get_file("META-INF/manifest.xml")
+        string = BytesIO(file)
+        ee = etree.parse(string)
         for xml_ref in ee.findall("//{urn:oasis:names:tc:opendocument:xmlns:manifest:1.0}file-entry[@{urn:oasis:names:tc:opendocument:xmlns:manifest:1.0}media-type='text/xml']"):
             paths.append(xml_ref.attrib['{urn:oasis:names:tc:opendocument:xmlns:manifest:1.0}full-path'])
         return paths
@@ -116,7 +118,7 @@ class ODFTemplate(object):
             template = self.get_file(f_to_process)
             for preprocess_func in list_preprocessors(self.preprocessors):
                 template = preprocess_func(template)
-            template = Template(template)
+            template = Template(template.decode())
             xml_result = template.render(context)
             filename = os.path.join(tmpdir, f_to_process)
             result_fd = open(filename, 'w')
@@ -208,14 +210,14 @@ class _UnpackedODFHandler(object):
         shutil.copytree(self.dirname, dstdir)
 
 
-class Document(file):
+class Document(FileIO):
 
     def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True):
-        file.__init__(self, filename, mode, buffering)
+        FileIO.__init__(self, filename, mode, buffering)
         self.delete_on_close = delete_on_close
 
     def close(self):
-        file.close(self)
+        FileIO.close(self)
         if self.delete_on_close:
             self.delete()
 

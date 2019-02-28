@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from importlib import import_module
-from cStringIO import StringIO
-from lxml import etree
 import re
+from io import BytesIO, StringIO
+from lxml import etree
+from importlib import import_module
 
 
 def list_preprocessors(preprocessors):
@@ -21,27 +21,27 @@ def list_preprocessors(preprocessors):
 
 def unescape_templatetags_preprocessor(template_content):
     replace_map = [
-        ('&quot;', '"'),
-        ('&lt;', '<'),
-        ('&gt;', '>'),
-        ('&amp;', '&'),
+        (b'&quot;', b'"'),
+        (b'&lt;', b'<'),
+        (b'&gt;', b'>'),
+        (b'&amp;', b'&'),
     ]
     for from_sym, to_sym in replace_map:
-        for include_text in re.findall(r'{%(.+?)%}', template_content):
+        for include_text in re.findall(b'{%(.+?)%}', template_content):
             new_include_text = include_text.replace(from_sym, to_sym)
             template_content = template_content.replace(
-                '{%%%s%%}' % include_text, '{%%%s%%}' % new_include_text
+                b'{%%%s%%}' % include_text, b'{%%%s%%}' % new_include_text
             )
-        for include_text in re.findall(r'{{(.+?)}}', template_content):
+        for include_text in re.findall(b'{{(.+?)}}', template_content):
             new_include_text = include_text.replace(from_sym, to_sym)
             template_content = template_content.replace(
-                '{{%s}}' % include_text, '{{%s}}' % new_include_text
+                b'{{%s}}' % include_text, b'{{%s}}' % new_include_text
             )
     return template_content
 
 
 def xmlfor_preprocessor(template_content):
-    tree = etree.parse(StringIO(template_content))
+    tree = etree.parse(BytesIO(template_content))
 
     # 1. search for xmlfor pairs
     re_xmlfor = re.compile(r'{%\s*xmlfor([^%]*)%}')
@@ -111,7 +111,7 @@ def _find_common_ancestor(tag1, tag2):
 
 
 def _tree_to_string(tree):
-    output = StringIO()
+    output = BytesIO()
     tree.write(output)
     output.seek(0)
     return output.read()

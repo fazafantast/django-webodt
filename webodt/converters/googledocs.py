@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from cStringIO import StringIO
+import urllib
+import urllib2
+import uuid
 from lxml import etree
 from webodt import Document
 from webodt.conf import WEBODT_GOOGLEDOCS_EMAIL, WEBODT_GOOGLEDOCS_PASSWORD
 from webodt.converters import ODFConverter
 from webodt.helpers import guess_extend_and_filename
-import urllib
-import urllib2
-import uuid
+from io import StringIO
 
 AUTH_URL = 'https://www.google.com/accounts/ClientLogin'
 
