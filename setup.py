@@ -1,9 +1,9 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
+from __future__ import unicode_literals
 from distutils.core import setup
 
-import os, sys
-reload(sys).setdefaultencoding("UTF-8")
+import os
+
 
 def read(fname):
     try:
@@ -11,17 +11,18 @@ def read(fname):
     except:
         return ''
 
+
 setup(
     name='django-webodt',
-    version='0.3.1',
+    version='0.4.0',
     author='NetAngels',
     author_email='info@netangels.ru',
     packages=['webodt', 'webodt.converters', 'webodt.tests'],
-    url='http://github.com/netangels/django-webodt',
-    license = 'BSD License',
-    description = u'ODF template handler and odt to html, pdf, doc, etc converter',
-    long_description = read('README.rst'),
-    install_requires = [
+    url='https://github.com/fazafantast/django-webodt',
+    license='BSD License',
+    description=u'ODF template handler and odt to html, pdf, doc, etc converter',
+    long_description=read('README.rst'),
+    install_requires=[
         'Django',
         'lxml',
     ],
