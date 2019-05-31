@@ -20,6 +20,8 @@ from webodt.conf import WEBODT_TEMPLATE_PATH, WEBODT_ODF_TEMPLATE_PREPROCESSORS,
 from webodt.preprocessors import list_preprocessors
 
 
+__VERSION__ = '0.5.0'
+
 CONTENT_TYPES = {
     'html': 'text/html',
     'odt': 'application/vnd.oasis.opendocument.text',
@@ -66,15 +68,15 @@ class HTMLTemplate(ODFBaseMixin):
         fd.write(smart_str(content))
         fd.close()
         # return HTML document
-        return HTMLDocument(tmpfile, delete_on_close=delete_on_close)
+        return HTMLDocument(tmpfile, delete_on_close=delete_on_close, format=self.format)
 
 
-class ODFBaseTemplate(ODFBaseMixin):
+class ODFTemplate(ODFBaseMixin):
     """
     ODF template Base class
     """
-    
-    format = 'odt'
+    format = None
+    document_class = None
     _fake_timestamp = time.mktime((2010, 1, 1, 0, 0, 0, 0, 0, 0))
 
     def __init__(self, template_name, preprocessors=None):
@@ -83,6 +85,11 @@ class ODFBaseTemplate(ODFBaseMixin):
 
         template_name: name of the template to load and handle
         """
+        _, ext = os.path.splitext(template_name)
+        if ext not in ('.odt', '.ods'):
+            raise ValueError('Template extension %s not processed' % (ext))
+        self.format = 'odt' if ext == '.odt' else 'ods'
+
         if not preprocessors:
             preprocessors = WEBODT_ODF_TEMPLATE_PREPROCESSORS
         self.preprocessors = preprocessors
@@ -152,15 +159,7 @@ class ODFBaseTemplate(ODFBaseMixin):
         # remove directory tree
         shutil.rmtree(tmpdir)
         # return ODF document
-        return ODFDocument(tmpfile, delete_on_close=delete_on_close)
-
-
-class ODTTemplate(ODFBaseTemplate):
-    format = 'odt'
-
-
-class ODSTemplate(ODFBaseTemplate):
-    format = 'ods'
+        return ODFDocument(tmpfile, delete_on_close=delete_on_close, format=self.format)
 
 
 class _PackedODFHandler(object):
@@ -234,9 +233,10 @@ class _UnpackedODFHandler(object):
 
 class Document(ODFBaseMixin, FileIO):
 
-    def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True):
+    def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True, format='odt'):
         FileIO.__init__(self, filename, mode, buffering)
         self.delete_on_close = delete_on_close
+        self.format = format
 
     def close(self):
         FileIO.close(self)
@@ -248,7 +248,6 @@ class Document(ODFBaseMixin, FileIO):
 
 
 class HTMLDocument(Document):
-    format = 'html'
 
     def get_content(self):
         fd = open(self.name, 'r')
@@ -258,7 +257,6 @@ class HTMLDocument(Document):
 
 
 class ODFDocument(Document):
-    format = 'odt'
 
     def get_content_xml(self):
         fd = zipfile.ZipFile(self.name)

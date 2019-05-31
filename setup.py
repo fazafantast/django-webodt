@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-from __future__ import unicode_literals
 from distutils.core import setup
 
 import os
@@ -14,16 +13,17 @@ def read(fname):
 
 setup(
     name='django-webodt',
-    version='0.4.0',
+    version='0.5.0',
+    description=u'ODF template handler and odt to html, pdf, doc, etc converter',
     author='NetAngels',
     author_email='info@netangels.ru',
+    keywords='django odt converter',
     packages=['webodt', 'webodt.converters', 'webodt.tests'],
     url='https://github.com/fazafantast/django-webodt',
     license='BSD License',
-    description=u'ODF template handler and odt to html, pdf, doc, etc converter',
     long_description=read('README.rst'),
     install_requires=[
-        'Django',
+        'Django>2.0',
         'lxml',
     ],
     classifiers=(
