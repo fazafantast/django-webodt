@@ -7,3 +7,4 @@ django_webodt.egg-info
 localsettings.py
 doc/_build
 webodt_sample/build/
+.idea/
