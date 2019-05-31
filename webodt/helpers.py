@@ -4,13 +4,17 @@ import mimetypes
 import tempfile
 import os
 
+import webodt
+
 
 def get_mimetype(ext):
     extend = '.%s' % ext
     map = mimetypes.types_map.copy()
-    map['.odt'] = 'application/vnd.oasis.opendocument.text'
-    map['.rtf'] = 'text/richtext'
-    mimetype = map[extend]
+    for extension, mimtype in webodt.CONTENT_TYPES.items():
+        extension = '.{}'.format(extension)
+        map[extension] = mimtype
+
+    mimetype = map[ext]
     return mimetype
 
 

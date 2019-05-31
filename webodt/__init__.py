@@ -20,10 +20,25 @@ from webodt.conf import WEBODT_TEMPLATE_PATH, WEBODT_ODF_TEMPLATE_PREPROCESSORS,
 from webodt.preprocessors import list_preprocessors
 
 
-class HTMLTemplate(object):
+CONTENT_TYPES = {
+    'html': 'text/html',
+    'odt': 'application/vnd.oasis.opendocument.text',
+    'ods': 'application/vnd.oasis.opendocument.spreadsheet',
+    'rtf': 'text/richtext'
+}
+
+
+class ODFBaseMixin(object):
+    def get_content_type(self):
+        return CONTENT_TYPES[self.format]
+
+    def tempfile_suffix(self):
+        return '.{}'.format(self.format)
+
+
+class HTMLTemplate(ODFBaseMixin):
     """ HTML template class """
     format = 'html'
-    content_type = 'text/html'
 
     def __init__(self, template_name):
         """ Create object by the template name. The template name is relative
@@ -45,7 +60,7 @@ class HTMLTemplate(object):
         template = Template(self.get_content())
         content = template.render(context)
         # create and return .html file
-        lowlevel_fd, tmpfile = tempfile.mkstemp(suffix='.html', dir=WEBODT_TMP_DIR)
+        lowlevel_fd, tmpfile = tempfile.mkstemp(suffix=self.tempfile_suffix(), dir=WEBODT_TMP_DIR)
         os.close(lowlevel_fd)
         fd = open(tmpfile, 'w')
         fd.write(smart_str(content))
@@ -54,13 +69,12 @@ class HTMLTemplate(object):
         return HTMLDocument(tmpfile, delete_on_close=delete_on_close)
 
 
-class ODFTemplate(object):
+class ODFBaseTemplate(ODFBaseMixin):
     """
-    ODF template class
+    ODF template Base class
     """
-
+    
     format = 'odt'
-    content_type = 'application/vnd.oasis.opendocument.text'
     _fake_timestamp = time.mktime((2010, 1, 1, 0, 0, 0, 0, 0, 0))
 
     def __init__(self, template_name, preprocessors=None):
@@ -125,7 +139,7 @@ class ODFTemplate(object):
             result_fd.write(smart_str(xml_result))
             result_fd.close()
 
-        lowlevel_fd, tmpfile = tempfile.mkstemp(suffix='.odt', dir=WEBODT_TMP_DIR)
+        lowlevel_fd, tmpfile = tempfile.mkstemp(suffix=self.tempfile_suffix(), dir=WEBODT_TMP_DIR)
         os.close(lowlevel_fd)
         tmpzipfile = zipfile.ZipFile(tmpfile, 'w')
         for root, _, files in os.walk(tmpdir):
@@ -139,6 +153,14 @@ class ODFTemplate(object):
         shutil.rmtree(tmpdir)
         # return ODF document
         return ODFDocument(tmpfile, delete_on_close=delete_on_close)
+
+
+class ODTTemplate(ODFBaseTemplate):
+    format = 'odt'
+
+
+class ODSTemplate(ODFBaseTemplate):
+    format = 'ods'
 
 
 class _PackedODFHandler(object):
@@ -210,7 +232,7 @@ class _UnpackedODFHandler(object):
         shutil.copytree(self.dirname, dstdir)
 
 
-class Document(FileIO):
+class Document(ODFBaseMixin, FileIO):
 
     def __init__(self, filename, mode='rb', buffering=1, delete_on_close=True):
         FileIO.__init__(self, filename, mode, buffering)
@@ -227,7 +249,6 @@ class Document(FileIO):
 
 class HTMLDocument(Document):
     format = 'html'
-    content_type = 'text/html'
 
     def get_content(self):
         fd = open(self.name, 'r')
@@ -238,7 +259,6 @@ class HTMLDocument(Document):
 
 class ODFDocument(Document):
     format = 'odt'
-    content_type = 'application/vnd.oasis.opendocument.text'
 
     def get_content_xml(self):
         fd = zipfile.ZipFile(self.name)

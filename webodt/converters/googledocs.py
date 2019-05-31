@@ -49,7 +49,7 @@ class GoogleDocsODFConverter(ODFConverter):
             'GData-Version': '3.0',
             'Authorization': 'GoogleLogin auth=%s' % self.auth_token,
             'Content-Length': str(len(data)),
-            'Content-Type': document.content_type,
+            'Content-Type': document.get_content_type(),
             'Slug': '%s.%s' % (uuid.uuid4(), document.format),
         }
         request = urllib2.Request(url, data, headers)
